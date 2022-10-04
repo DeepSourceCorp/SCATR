@@ -1,0 +1,15 @@
+files = "*.py"
+comment_prefix = ["#"]
+
+[checks]
+script = """
+# NOP as this is a test script
+exit 0
+"""
+interpreter = "sh"
+output_file = "analysis_result.json"
+
+[processor]
+script = """
+cat $INPUT_FILE
+"""

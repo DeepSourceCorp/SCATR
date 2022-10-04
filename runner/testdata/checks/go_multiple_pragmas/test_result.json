@@ -1,0 +1,19 @@
+{
+  "passed": false,
+  "result": {
+    "main.go": {
+      "unexpected": [],
+      "not-raised": [
+        {
+          "code": "SCC-U1000",
+          "title": "Code is unused",
+          "position": {
+            "start": {
+              "line": 10
+            }
+          }
+        }
+      ]
+    }
+  }
+}

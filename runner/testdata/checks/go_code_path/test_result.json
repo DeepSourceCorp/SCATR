@@ -1,0 +1,49 @@
+{
+  "passed": false,
+  "result": {
+    "code/main.go": {
+      "unexpected": [
+        {
+          "code": "GO-C5002",
+          "title": "Redundant type in variable declaration",
+          "position": {
+            "start": {
+              "line": 4,
+              "column": 9
+            }
+          }
+        },
+        {
+          "code": "SCC-compile",
+          "title": "Unable to compile...",
+          "position": {
+            "start": {
+              "line": 1,
+              "column": 1
+            }
+          }
+        }
+      ],
+      "not-raised": [
+        {
+          "code": "GO-C5001",
+          "title": "Redundant type in variable declaration",
+          "position": {
+            "start": {
+              "line": 4,
+              "column": 9
+            }
+          }
+        },
+        {
+          "code": "VET-V0002",
+          "position": {
+            "start": {
+              "line": 12
+            }
+          }
+        }
+      ]
+    }
+  }
+}

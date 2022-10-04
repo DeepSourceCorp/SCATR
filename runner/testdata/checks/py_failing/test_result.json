@@ -1,0 +1,49 @@
+{
+  "passed": false,
+  "result": {
+    "file.py": {
+      "unexpected": [
+        {
+          "code": "PTC-W0010",
+          "title": "File opened without the with statement",
+          "position": {
+            "start": {
+              "line": 4
+            }
+          }
+        },
+        {
+          "code": "PTC-W0014",
+          "title": "Debugger activation detected",
+          "position": {
+            "start": {
+              "line": 8,
+              "column": 2
+            }
+          }
+        }
+      ],
+      "not-raised": [
+        {
+          "code": "PTC-W0014",
+          "title": "Debugger activation detected",
+          "position": {
+            "start": {
+              "line": 7,
+              "column": 4
+            }
+          }
+        },
+        {
+          "code": "PY-DUMMY",
+          "title": "Something",
+          "position": {
+            "start": {
+              "line": 11
+            }
+          }
+        }
+      ]
+    }
+  }
+}

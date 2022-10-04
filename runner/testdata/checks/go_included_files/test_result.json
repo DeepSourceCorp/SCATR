@@ -1,0 +1,28 @@
+{
+  "passed": false,
+  "result": {
+    "cmd/cmd.go": {
+      "unexpected": [],
+      "not-raised": [
+        {
+          "code": "SCC-U1000",
+          "title": "func foo() is unused",
+          "position": {
+            "start": {
+              "line": 4
+            }
+          }
+        },
+        {
+          "code": "VET-V0002",
+          "title": "Useless assignment",
+          "position": {
+            "start": {
+              "line": 7
+            }
+          }
+        }
+      ]
+    }
+  }
+}

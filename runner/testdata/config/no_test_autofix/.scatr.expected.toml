@@ -1,0 +1,11 @@
+test_autofix = true
+
+[checks]
+interpreter = "sh"
+
+[autofix]
+script = "script"
+interpreter = "sh"
+
+[processor]
+interpreter = "sh"
