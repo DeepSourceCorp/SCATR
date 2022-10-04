@@ -1,0 +1,17 @@
+files = "*.go"
+comment_prefix = ["//"]
+code_path = "./code"
+
+[checks]
+script = """
+# NOP as this is a test script
+exit 0
+"""
+interpreter = "sh"
+output_file = "analysis_result.json"
+
+[processor]
+skip_processing = false
+script = """
+cat $INPUT_FILE
+"""

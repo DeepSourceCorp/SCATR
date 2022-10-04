@@ -1,0 +1,25 @@
+{
+  "issues": [
+    {
+      "code": "PTC-W0010",
+      "title": "File opened without the with statement",
+      "position": {
+        "file": "file.py",
+        "start": {
+          "line": 4
+        }
+      }
+    },
+    {
+      "code": "PTC-W0014",
+      "title": "Debugger activation detected",
+      "position": {
+        "file": "file.py",
+        "start": {
+          "line": 8,
+          "column": 2
+        }
+      }
+    }
+  ]
+}

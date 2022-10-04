@@ -1,0 +1,8 @@
+test_checks = false
+test_autofix = false
+
+[checks]
+script = "script"
+
+[autofix]
+script = "script"

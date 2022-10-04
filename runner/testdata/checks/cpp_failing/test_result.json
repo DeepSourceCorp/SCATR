@@ -1,0 +1,28 @@
+{
+  "passed": false,
+  "result": {
+    "main.cpp": {
+      "unexpected": [
+        {
+          "code": "CXX-S1001",
+          "title": "Array-index variable with possibly unchecked bounds",
+          "position": {
+            "start": {
+              "line": 9
+            }
+          }
+        },
+        {
+          "code": "CXX-S1002",
+          "title": "Unchecked parameter value used in array index",
+          "position": {
+            "start": {
+              "line": 11
+            }
+          }
+        }
+      ],
+      "not-raised": []
+    }
+  }
+}

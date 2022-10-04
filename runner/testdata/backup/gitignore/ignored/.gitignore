@@ -1,0 +1,3 @@
+# As the backup only respects the root .gitignore, this is to ensure that this
+# file is checked in
+!1.backup.txt
