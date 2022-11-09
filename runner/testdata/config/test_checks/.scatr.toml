@@ -1,0 +1,4 @@
+test_checks = false
+
+[checks]
+script = "script"

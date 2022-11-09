@@ -1,0 +1,6 @@
+package main
+
+func ipsum() {
+	a := 10
+	_ = a
+}

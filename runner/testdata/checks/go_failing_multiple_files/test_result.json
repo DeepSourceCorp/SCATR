@@ -1,0 +1,64 @@
+{
+  "passed": false,
+  "result": {
+    "main.go": {
+      "unexpected": [
+        {
+          "code": "GO-C5002",
+          "title": "Redundant type in variable declaration",
+          "position": {
+            "start": {
+              "line": 4,
+              "column": 9
+            }
+          }
+        },
+        {
+          "code": "SCC-compile",
+          "title": "Unable to compile...",
+          "position": {
+            "start": {
+              "line": 1,
+              "column": 1
+            }
+          }
+        }
+      ],
+      "not-raised": [
+        {
+          "code": "GO-C5001",
+          "title": "Redundant type in variable declaration",
+          "position": {
+            "start": {
+              "line": 4,
+              "column": 9
+            }
+          }
+        }
+      ]
+    },
+    "cmd/cmd.go": {
+      "unexpected": [],
+      "not-raised": [
+        {
+          "code": "SCC-U1000",
+          "title": "func foo() is unused",
+          "position": {
+            "start": {
+              "line": 4
+            }
+          }
+        },
+        {
+          "code": "VET-V0002",
+          "title": "Useless assignment",
+          "position": {
+            "start": {
+              "line": 7
+            }
+          }
+        }
+      ]
+    }
+  }
+}
