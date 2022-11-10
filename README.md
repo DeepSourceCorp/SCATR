@@ -25,7 +25,8 @@ output_file = "analysis_result.json"
 
 [processor]
 skip_processing = false
-path = "process-results"
+script = "process-results $INPUT_FILE"
+interpreter = "sh"
 
 [autofix]
 script = """
@@ -53,8 +54,9 @@ SCATR has two stages,
 ### The `processor`
 
 The processor is expected to convert the `run` `output_file` to a JSON-based
-format `scatr` expects. It is run with the first argument as the path to
-the `output_file`. It is expected to print the JSON on `stdout`.
+format `scatr` expects. It is expected to print the JSON on `stdout`. Just like
+the runner, SCATR accepts an arbitrary script as a processor. The `output_file`
+from the `run` stage is passed as the `INPUT_FILE` environment variable.
 
 The format that `scatr` expects is as follows:
 
