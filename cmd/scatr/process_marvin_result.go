@@ -15,7 +15,7 @@ import (
 
 var processMarvinResultCmd = &cobra.Command{
 	Use:   "process-marvin-result",
-	Short: "Convert marvin based result into a SCATR result",
+	Short: "Convert marvin based result into a SCATR result. Used internally by DeepSource.",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		inputFile := os.Getenv("INPUT_FILE")
 		if inputFile == "" {
