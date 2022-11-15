@@ -10,6 +10,7 @@ require (
 	github.com/google/go-cmp v0.5.9
 	github.com/hexops/gotextdiff v1.0.3
 	github.com/sabhiram/go-gitignore v0.0.0-20210923224102-525f6e181f06
+	github.com/shamaton/msgpack v1.2.1
 	github.com/spf13/cobra v1.6.1
 	golang.org/x/term v0.0.0-20221017184919-83659145692c
 )
