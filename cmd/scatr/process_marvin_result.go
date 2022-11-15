@@ -19,7 +19,7 @@ var processMarvinResultCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		inputFile := os.Getenv("INPUT_FILE")
 		if inputFile == "" {
-			return errors.New("no INPUT_FILE provided")
+			return errors.New("INPUT_FILE not set")
 		}
 
 		if !verbose {
