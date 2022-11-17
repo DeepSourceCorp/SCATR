@@ -9,6 +9,29 @@ SCATR is a simple framework to test static analyzers and Autofixers.
 
 ## Getting Started
 
+### Installation
+
+If you are on platforms where binaries are supported feel free to use the ones, provided in the releases.
+
+In case you would like to install from source,
+```sh
+# make sure to install go from `go.dev`
+# clone the repo 
+git clone git@github.com:deepsourcelabs/SCATR.git
+
+# cd into the directory
+cd SCATR
+
+# build and install manually or use go install
+go install ./cmd/scatr
+
+# ensure that $GOPATH is added to your paths
+# the default $GOPATH=/home/<user>/go
+```
+
+
+### Usage
+
 `scatr` accepts a `.scatr.toml` as its configuration file.
 
 ```toml
