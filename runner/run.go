@@ -28,7 +28,7 @@ func Run(printer IssuePrinter, files []string, autofixDir string) (bool, error) 
 
 	if config.TestChecks {
 		printer.PrintHeader("Testing checks")
-		res, testPassed, err := testChecks(config, includedFiles)
+		res, testPassed, err := testChecks(config, includedFiles, printer)
 		if err != nil {
 			return false, err
 		}
@@ -56,7 +56,7 @@ func Run(printer IssuePrinter, files []string, autofixDir string) (bool, error) 
 	return passed, nil
 }
 
-func testChecks(config *Config, includedFiles map[string]bool) (checksDiff, bool, error) {
+func testChecks(config *Config, includedFiles map[string]bool, printer IssuePrinter) (checksDiff, bool, error) {
 	log.Printf("Running the checks test script with the interpreter %q\n", config.Checks.Interpreter)
 	log.Println("--- Checks run log ---")
 
@@ -77,6 +77,8 @@ func testChecks(config *Config, includedFiles map[string]bool) (checksDiff, bool
 	if err != nil {
 		return nil, false, err
 	}
+
+	printUnmatchedFiles(result, files, printer)
 
 	res, passed := diffChecksResult(files, includedFiles, result)
 	return res, passed, err

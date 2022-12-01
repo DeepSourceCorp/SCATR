@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/deepsourcelabs/SCATR/pragma"
 	"github.com/fatih/color"
 	"github.com/hexops/gotextdiff"
 )
@@ -33,6 +34,7 @@ type IssuePrinter interface {
 	PrintIssue(file string, line, column, failureType int, issue *Issue)
 	PrintUnifiedDiff(file string, diff gotextdiff.Unified)
 	PrintStatus(passed bool)
+	PrintWarning(warning string)
 }
 
 func printChecksDiff(res checksDiff, printer IssuePrinter) {
@@ -56,6 +58,24 @@ func printChecksDiff(res checksDiff, printer IssuePrinter) {
 func printAutofixDiff(res autofixDiff, printer IssuePrinter) {
 	for file, diff := range res {
 		printer.PrintUnifiedDiff(file, diff)
+	}
+}
+
+func printUnmatchedFiles(result *Result, files map[string]*pragma.File, printer IssuePrinter) {
+	fmt.Println()
+	warnedFiles := make(map[string]struct{})
+
+	for _, iss := range result.Issues {
+		if _, ok := files[iss.Position.fileNormalized]; !ok {
+			if _, ok := warnedFiles[iss.Position.fileNormalized]; ok {
+				continue
+			}
+			warnedFiles[iss.Position.fileNormalized] = struct{}{}
+			printer.PrintWarning(fmt.Sprintf(
+				"%q is present in the analysis result but is not checked by SCATR.",
+				iss.Position.File,
+			))
+		}
 	}
 }
 
@@ -93,6 +113,10 @@ func (DefaultIssuePrinter) PrintUnifiedDiff(file string, diff gotextdiff.Unified
 	fmt.Println(diff)
 }
 
+func (DefaultIssuePrinter) PrintWarning(warning string) {
+	fmt.Println("Warn:", warning)
+}
+
 type PrettyIssuePrinter struct {
 	cwd          string
 	filesPrinted map[string]bool
@@ -102,6 +126,9 @@ type PrettyIssuePrinter struct {
 
 	diffInsertedColor *color.Color
 	diffDeletedColor  *color.Color
+
+	warnLabelColor *color.Color
+	warnTextColor  *color.Color
 }
 
 func NewPrettyIssuePrinter() *PrettyIssuePrinter {
@@ -118,6 +145,8 @@ func NewPrettyIssuePrinter() *PrettyIssuePrinter {
 		positionColor:     color.New(color.FgBlue),
 		diffInsertedColor: color.New(color.FgGreen),
 		diffDeletedColor:  color.New(color.FgRed),
+		warnLabelColor:    color.New(color.BgYellow, color.FgBlack),
+		warnTextColor:     color.New(color.FgYellow),
 	}
 }
 
@@ -207,4 +236,10 @@ func (p *PrettyIssuePrinter) PrintUnifiedDiff(file string, diff gotextdiff.Unifi
 			}
 		}
 	}
+}
+
+func (p *PrettyIssuePrinter) PrintWarning(warning string) {
+	p.warnLabelColor.Print("WARN")
+	fmt.Print(" ")
+	p.warnTextColor.Println(warning)
 }
