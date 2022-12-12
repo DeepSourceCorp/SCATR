@@ -40,10 +40,6 @@ var processMarvinResultCmd = &cobra.Command{
 			return err
 		}
 
-		if !data.IsPassed {
-			return errors.New("The marvin run failed")
-		}
-
 		result := marvinResultToResult(data)
 		resultJSON, err := json.Marshal(result)
 		if err != nil {
@@ -86,8 +82,7 @@ type MarvinIssue struct {
 }
 
 type MarvinResult struct {
-	Issues   []MarvinIssue `json:"issues" msgpack:"issues"`
-	IsPassed bool          `json:"is_passed" msgpack:"is_passed"`
+	Issues []MarvinIssue `json:"issues" msgpack:"issues"`
 }
 
 func unmarshalMarvinResult(isMsgpack bool, file string) (*MarvinResult, error) {
