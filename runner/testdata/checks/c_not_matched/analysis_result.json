@@ -1,0 +1,24 @@
+{
+  "issues": [
+    {
+      "code": "CXX-S1001",
+      "title": "Array-index variable with possibly unchecked bounds",
+      "position": {
+        "file": "main.cpp",
+        "start": {
+          "line": 10
+        }
+      }
+    },
+    {
+      "code": "CXX-S1002",
+      "title": "Unchecked parameter value used in array index",
+      "position": {
+        "file": "main.cpp",
+        "start": {
+          "line": 12
+        }
+      }
+    }
+  ]
+}
