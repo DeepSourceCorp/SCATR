@@ -17,8 +17,8 @@ var versionCmd = &cobra.Command{
 		fmt.Println("  Version:", version)
 		fmt.Println()
 		fmt.Println("Environment:")
-		fmt.Println("  GOOS:  ", runtime.GOOS)
-		fmt.Println("  GOARCH:", runtime.GOARCH)
+		fmt.Println("  OS:  ", runtime.GOOS)
+		fmt.Println("  ARCH:", runtime.GOARCH)
 	},
 }
 
