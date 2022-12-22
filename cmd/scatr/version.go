@@ -1,0 +1,27 @@
+package main
+
+import (
+	"fmt"
+	"runtime"
+
+	"github.com/spf13/cobra"
+)
+
+const version = "0.2.1"
+
+var versionCmd = &cobra.Command{
+	Use:   "version",
+	Short: "Returns the current SCATR version",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("SCATR analyzer testing framework")
+		fmt.Println("  Version:", version)
+		fmt.Println()
+		fmt.Println("Environment:")
+		fmt.Println("  GOOS:  ", runtime.GOOS)
+		fmt.Println("  GOARCH:", runtime.GOARCH)
+	},
+}
+
+func init() {
+	rootCmd.AddCommand(versionCmd)
+}
