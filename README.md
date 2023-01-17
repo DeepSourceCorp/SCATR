@@ -47,9 +47,9 @@ goes for the `files` flag. Only the files in the `code_path` are tested.
 ### `excluded_dirs`
 
 SCATR optionally also accepts a list of directories (absolute or relative to the
-`cwd`) from which results are excluded. Say for example, an issue was raised
-in one of the excluded directory. SCATR will ignore matching any files inside
-the `excluded_dirs`. Same applies for Autofix.
+`cwd`) from which results are excluded. Say, for example, an issue was raised
+in one of the excluded directories. SCATR will ignore matching any files inside
+the `excluded_dirs`. The same applies to Autofix.
 
 ## Testing Checks
 
