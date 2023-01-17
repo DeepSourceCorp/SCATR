@@ -144,6 +144,17 @@ func TestParsePragma(t *testing.T) {
 				Hit: map[string]bool{"GO-W1000": false, "GO-W1001": false},
 			},
 		},
+		{
+			name: "pragma with quote escaping",
+			args: args{comment: `[GO-W1000]: 1 "Hello \"World\""; [GO-W1001]: 1 "Foo"`},
+			want: &Pragma{
+				Issues: map[string][]*Issue{
+					"GO-W1000": {{Column: 1, Message: `Hello "World"`}},
+					"GO-W1001": {{Column: 1, Message: "Foo"}},
+				},
+				Hit: map[string]bool{"GO-W1000": false, "GO-W1001": false},
+			},
+		},
 	}
 
 	for _, tt := range tests {

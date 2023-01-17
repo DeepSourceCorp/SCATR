@@ -1,0 +1,6 @@
+package a
+
+func main() {
+	a := 10
+	_ = a
+}

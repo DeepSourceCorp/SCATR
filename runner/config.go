@@ -5,6 +5,7 @@ import "github.com/BurntSushi/toml"
 type Config struct {
 	FilesGlob     string           `toml:"files"`
 	CommentPrefix []string         `toml:"comment_prefix"`
+	ExcludedDirs  []string         `toml:"excluded_dirs"`
 	CodePath      string           `toml:"code_path"`
 	Checks        TestRunnerConfig `toml:"checks"`
 	Autofix       TestRunnerConfig `toml:"autofix"`
@@ -59,6 +60,15 @@ func ReadConfig(filePath string) (*Config, error) {
 		// Only test the checks if `test_autofix` in the TOML is true, or if the key
 		// `test_autofix` is not present while the key `autofix` is present.
 		config.TestAutofix = meta.IsDefined("autofix")
+	}
+
+	for i, dir := range config.ExcludedDirs {
+		normalized, err := normalizeFilePath(dir)
+		if err != nil {
+			return nil, err
+		}
+
+		config.ExcludedDirs[i] = normalized
 	}
 
 	return &config, nil
