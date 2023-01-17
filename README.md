@@ -15,6 +15,7 @@ SCATR is a simple framework to test static analyzers and Autofixers.
 files = "*.go"
 comment_prefix = ["//"]
 code_path = ""
+excluded_dirs = []
 
 [checks]
 script = """
@@ -42,6 +43,13 @@ or a path relative to the `cwd`. When the `code_path` is specified, the runner
 expects the file paths in the `analysis_results.json` (output from the
 processor) to either be absolute, or to be relative to the `code_path`. Same
 goes for the `files` flag. Only the files in the `code_path` are tested.
+
+### `excluded_dirs`
+
+SCATR optionally also accepts a list of directories (absolute or relative to the
+`cwd`) from which results are excluded. Say for example, an issue was raised
+in one of the excluded directory. SCATR will ignore matching any files inside
+the `excluded_dirs`. Same applies for Autofix.
 
 ## Testing Checks
 
