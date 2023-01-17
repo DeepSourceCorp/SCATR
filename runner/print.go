@@ -246,12 +246,12 @@ func (p *PrettyIssuePrinter) PrintWarning(warning string) {
 
 type NOPIssuePrinter struct{}
 
-func (N NOPIssuePrinter) PrintHeader(string) {}
+func (NOPIssuePrinter) PrintHeader(string) {}
 
-func (N NOPIssuePrinter) PrintIssue(string, int, int, int, *Issue) {}
+func (NOPIssuePrinter) PrintIssue(string, int, int, int, *Issue) {}
 
-func (N NOPIssuePrinter) PrintUnifiedDiff(string, gotextdiff.Unified) {}
+func (NOPIssuePrinter) PrintUnifiedDiff(string, gotextdiff.Unified) {}
 
-func (N NOPIssuePrinter) PrintStatus(bool) {}
+func (NOPIssuePrinter) PrintStatus(bool) {}
 
-func (N NOPIssuePrinter) PrintWarning(string) {}
+func (NOPIssuePrinter) PrintWarning(string) {}
