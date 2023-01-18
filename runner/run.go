@@ -56,7 +56,11 @@ func Run(printer IssuePrinter, files []string, autofixDir string) (bool, error) 
 	return passed, nil
 }
 
-func testChecks(config *Config, includedFiles map[string]bool, printer IssuePrinter) (checksDiff, bool, error) {
+func testChecks(
+	config *Config,
+	includedFiles map[string]bool,
+	printer IssuePrinter,
+) (checksDiff, bool, error) {
 	log.Printf("Running the checks test script with the interpreter %q\n", config.Checks.Interpreter)
 	log.Println("--- Checks run log ---")
 
@@ -80,7 +84,7 @@ func testChecks(config *Config, includedFiles map[string]bool, printer IssuePrin
 
 	printUnmatchedFiles(result, files, printer)
 
-	res, passed := diffChecksResult(files, includedFiles, result)
+	res, passed := diffChecksResult(files, config.ExcludedDirs, includedFiles, result)
 	return res, passed, err
 }
 
@@ -129,7 +133,7 @@ func testAutofix(
 
 	log.Println("Autofix test script completed in", time.Since(startTime))
 
-	return diffAutofixResult(config.CodePath, backup)
+	return diffAutofixResult(config.CodePath, config.ExcludedDirs, backup)
 }
 
 // runScript runs a test runner script with the provided interpreter and pipes

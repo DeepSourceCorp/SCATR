@@ -28,7 +28,7 @@ func TestTestChecks(t *testing.T) {
 		"cpp", "cpp_failing",
 		"go", "go_failing", "go_failing_misc",
 		"go_multiple_pragmas", "go_failing_multiple_files", "go_included_files",
-		"go_code_path", "go_code_path_included_files",
+		"go_code_path", "go_code_path_included_files", "go_excluded_dirs",
 		"py", "py_failing",
 	}
 
@@ -78,7 +78,7 @@ func TestTestChecks(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			got, passed, err := testChecks(config, normalized)
+			got, passed, err := testChecks(config, normalized, &NOPIssuePrinter{})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -128,7 +128,7 @@ func TestTestChecks(t *testing.T) {
 // TestTestAutofix is an integration test for testing Autofix
 func TestTestAutofix(t *testing.T) {
 	tests := []string{
-		"go", "go_included_files", "go_failing",
+		"go", "go_included_files", "go_failing", "go_excluded_dirs",
 		"go_failing_code_path", "go_no_golden_file",
 	}
 

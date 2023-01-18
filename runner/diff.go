@@ -3,6 +3,7 @@ package runner
 import (
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/deepsourcelabs/SCATR/pragma"
 	"github.com/hexops/gotextdiff"
@@ -26,6 +27,7 @@ func newIssuesForFile() *issuesForFile {
 
 func diffChecksResult(
 	files map[string]*pragma.File,
+	excludedDirs []string,
 	includedFiles map[string]bool,
 	analysisResult *Result,
 ) (checksDiff, bool) {
@@ -33,6 +35,10 @@ func diffChecksResult(
 	passed := true
 
 	for _, iss := range analysisResult.Issues {
+		if isExcluded(iss.Position.fileNormalized, excludedDirs) {
+			continue
+		}
+
 		issues, ok := result[iss.Position.fileNormalized]
 		if !ok {
 			issues = newIssuesForFile()
@@ -94,6 +100,10 @@ func diffChecksResult(
 	}
 
 	for path, file := range files {
+		if isExcluded(path, excludedDirs) {
+			continue
+		}
+
 		issues, ok := result[path]
 		if !ok {
 			issues = newIssuesForFile()
@@ -140,11 +150,24 @@ func diffChecksResult(
 
 type autofixDiff map[string]gotextdiff.Unified
 
-func diffAutofixResult(codePath string, backup *AutofixBackup) (autofixDiff, bool, error) {
+func diffAutofixResult(
+	codePath string,
+	excludedDirs []string,
+	backup *AutofixBackup,
+) (autofixDiff, bool, error) {
 	result := make(autofixDiff)
 
 	for _, filePath := range backup.CopiedFiles {
 		codeFilePath := filepath.Join(codePath, filePath)
+
+		codeFilePathNormalized, err := normalizeFilePath(codeFilePath)
+		if err != nil {
+			return nil, false, err
+		}
+
+		if isExcluded(codeFilePathNormalized, excludedDirs) {
+			continue
+		}
 
 		goldenFilePath := codeFilePath + ".golden"
 		exists, err := fileExists(goldenFilePath)
@@ -198,4 +221,14 @@ func fileExists(filePath string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func isExcluded(filePath string, excludedDirs []string) bool {
+	for _, dir := range excludedDirs {
+		if strings.HasPrefix(filePath, dir) {
+			return true
+		}
+	}
+
+	return false
 }

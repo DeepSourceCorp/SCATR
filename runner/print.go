@@ -243,3 +243,15 @@ func (p *PrettyIssuePrinter) PrintWarning(warning string) {
 	fmt.Print(" ")
 	p.warnTextColor.Println(warning)
 }
+
+type NOPIssuePrinter struct{}
+
+func (NOPIssuePrinter) PrintHeader(string) {}
+
+func (NOPIssuePrinter) PrintIssue(string, int, int, int, *Issue) {}
+
+func (NOPIssuePrinter) PrintUnifiedDiff(string, gotextdiff.Unified) {}
+
+func (NOPIssuePrinter) PrintStatus(bool) {}
+
+func (NOPIssuePrinter) PrintWarning(string) {}
