@@ -155,6 +155,16 @@ func TestParsePragma(t *testing.T) {
 				Hit: map[string]bool{"GO-W1000": false, "GO-W1001": false},
 			},
 		},
+		{
+			name: "rust pragma with #[must_use]",
+			args: args{comment: "[RS-E1017]: \"Calling `.hash(_)` on expression with unit-type `#[must_use]`\""},
+			want: &Pragma{
+				Issues: map[string][]*Issue{
+					"RS-E1017": {{Message: "Calling `.hash(_)` on expression with unit-type `#[must_use]`"}},
+				},
+				Hit: map[string]bool{"RS-E1017": false},
+			},
+		},
 	}
 
 	for _, tt := range tests {
