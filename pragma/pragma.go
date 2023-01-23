@@ -36,7 +36,7 @@ func (p *Pragma) merge(other *Pragma) {
 }
 
 var (
-	pragmaRegex = regexp.MustCompile(`\s*\[([\w-]+)](:\s*([^#]+))?`)
+	pragmaRegex = regexp.MustCompile(`\s*\[([\w-]+)](:\s*(.*))?`)
 	issueRegex  = regexp2.MustCompile(`\s*(\d+)?\s*("(.*?(?<!\\))")?`, regexp2.None)
 )
 
