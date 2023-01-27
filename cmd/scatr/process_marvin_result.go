@@ -68,7 +68,7 @@ type MarvinLocation struct {
 		Begin struct {
 			Line   int `json:"line" msgpack:"line"`
 			Column int `json:"column" msgpack:"column"`
-		} `json:"begin"`
+		} `json:"begin" msgpack:"begin"`
 		End struct {
 			Line   int `json:"line" msgpack:"line"`
 			Column int `json:"column" msgpack:"column"`
