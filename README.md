@@ -14,6 +14,7 @@ SCATR is a simple framework to test static analyzers and Autofixers.
 If you are on platforms where binaries are supported feel free to use the ones, provided in the releases.
 
 In case you would like to install from source,
+
 ```sh
 # make sure to install go from `go.dev`
 # clone the repo 
@@ -28,7 +29,6 @@ go install ./cmd/scatr
 # ensure that $GOPATH is added to your paths
 # the default $GOPATH=/home/<user>/go
 ```
-
 
 ### Usage
 
