@@ -41,13 +41,14 @@ func Run(printer IssuePrinter, files []string, autofixDir string) (bool, error) 
 
 	if config.TestAutofix {
 		printer.PrintHeader("Testing Autofix")
-		res, testPassed, err := testAutofix(config, includedFiles, autofixDir)
+		res, identical, testPassed, err := testAutofix(config, includedFiles, autofixDir)
 		if err != nil {
 			return false, err
 		}
 
 		if !testPassed {
 			printAutofixDiff(res, printer)
+			printIdenticalFiles(identical, printer)
 			passed = false
 		}
 	}
@@ -92,11 +93,17 @@ func testAutofix(
 	config *Config,
 	includedFiles map[string]bool,
 	autofixDir string,
-) (autofixDiff, bool, error) {
+) (autofixDiff, identicalGoldenFiles, bool, error) {
 	log.Println("Backing up the potentially Autofix'able files")
 	backup, err := NewAutofixBackup(config, includedFiles, autofixDir)
 	if err != nil {
-		return nil, false, err
+		return nil, nil, false, err
+	}
+
+	log.Println("Checking for identical original and golden files")
+	identical, passed, err := checkIdenticalGoldenFile(config.CodePath, config.ExcludedDirs, backup)
+	if err != nil {
+		return nil, nil, false, err
 	}
 
 	log.Printf("Running the Autofix test script with the interpreter %q\n", config.Checks.Interpreter)
@@ -108,12 +115,12 @@ func testAutofix(
 	if autofixDir == "" {
 		outputDir, err = os.Getwd()
 		if err != nil {
-			return nil, false, err
+			return nil, nil, false, err
 		}
 	} else {
 		outputDir, err = filepath.Abs(autofixDir)
 		if err != nil {
-			return nil, false, err
+			return nil, nil, false, err
 		}
 	}
 
@@ -123,17 +130,22 @@ func testAutofix(
 		map[string]string{"OUTPUT_DIR": outputDir},
 	)
 	if err != nil {
-		return nil, false, err
+		return nil, nil, false, err
 	}
 
 	err = os.Unsetenv("OUTPUT_DIR")
 	if err != nil {
-		return nil, false, err
+		return nil, nil, false, err
 	}
 
 	log.Println("Autofix test script completed in", time.Since(startTime))
 
-	return diffAutofixResult(config.CodePath, config.ExcludedDirs, backup)
+	diff, diffPassed, err := diffAutofixResult(config.CodePath, config.ExcludedDirs, backup)
+	if err != nil {
+		return nil, nil, false, err
+	}
+
+	return diff, identical, passed && diffPassed, nil
 }
 
 // runScript runs a test runner script with the provided interpreter and pipes

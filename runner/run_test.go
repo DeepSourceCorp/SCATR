@@ -157,6 +157,17 @@ func TestTestAutofix(t *testing.T) {
 				t.Fatal(err)
 			}
 
+			filesIdenticalBytes, err := os.ReadFile("files_identical.json")
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			var expectedFilesIdentical []string
+			err = json.Unmarshal(filesIdenticalBytes, &expectedFilesIdentical)
+			if err != nil {
+				t.Fatal(err)
+			}
+
 			filesBytes, err := os.ReadFile("files.json")
 			if err != nil {
 				t.Fatal(err)
@@ -178,12 +189,12 @@ func TestTestAutofix(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			got, passed, err := testAutofix(config, normalized, "")
+			got, identical, passed, err := testAutofix(config, normalized, "")
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			expectedPassed := len(expectedFilesFailing) == 0
+			expectedPassed := len(expectedFilesFailing) == 0 && len(expectedFilesIdentical) == 0
 			if passed != expectedPassed {
 				t.Fatalf("expected passed: %v, got: %v", expectedPassed, passed)
 			}
@@ -191,6 +202,11 @@ func TestTestAutofix(t *testing.T) {
 			filesFailing := make([]string, 0, len(got))
 			for fileFailing := range got {
 				filesFailing = append(filesFailing, fileFailing)
+			}
+
+			filesIdentical := make([]string, 0, len(identical))
+			for file := range identical {
+				filesIdentical = append(filesIdentical, file)
 			}
 
 			opts := []cmp.Option{
@@ -205,6 +221,10 @@ func TestTestAutofix(t *testing.T) {
 			if !cmp.Equal(filesFailing, expectedFilesFailing, opts...) {
 				t.Fatalf("unexpected files failing, diff: %s",
 					cmp.Diff(filesFailing, expectedPassed, opts...))
+			}
+
+			if !cmp.Equal(filesIdentical, expectedFilesIdentical, opts...) {
+				t.Fatalf("unexpected files identical, diff: %v\n", cmp.Diff(filesIdentical, expectedFilesIdentical, opts...))
 			}
 		})
 	}
@@ -252,6 +272,17 @@ func TestTestAutofix_AutofixDir(t *testing.T) {
 				t.Fatal(err)
 			}
 
+			filesIdenticalBytes, err := os.ReadFile("files_identical.json")
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			var expectedFilesIdentical []string
+			err = json.Unmarshal(filesIdenticalBytes, &expectedFilesIdentical)
+			if err != nil {
+				t.Fatal(err)
+			}
+
 			filesBytes, err := os.ReadFile("files.json")
 			if err != nil {
 				t.Fatal(err)
@@ -273,12 +304,12 @@ func TestTestAutofix_AutofixDir(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			got, passed, err := testAutofix(config, normalized, autofixDir)
+			got, identical, passed, err := testAutofix(config, normalized, autofixDir)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			expectedPassed := len(expectedFilesFailing) == 0
+			expectedPassed := len(expectedFilesFailing) == 0 && len(expectedFilesIdentical) == 0
 			if passed != expectedPassed {
 				t.Fatalf("expected passed: %v, got: %v", expectedPassed, passed)
 			}
@@ -286,6 +317,11 @@ func TestTestAutofix_AutofixDir(t *testing.T) {
 			filesFailing := make([]string, 0, len(got))
 			for fileFailing := range got {
 				filesFailing = append(filesFailing, fileFailing)
+			}
+
+			filesIdentical := make([]string, 0, len(identical))
+			for file := range identical {
+				filesIdentical = append(filesIdentical, file)
 			}
 
 			opts := []cmp.Option{
@@ -300,6 +336,10 @@ func TestTestAutofix_AutofixDir(t *testing.T) {
 			if !cmp.Equal(filesFailing, expectedFilesFailing, opts...) {
 				t.Fatalf("unexpected files failing, diff: %s",
 					cmp.Diff(filesFailing, expectedPassed, opts...))
+			}
+
+			if !cmp.Equal(filesIdentical, expectedFilesIdentical, opts...) {
+				t.Fatalf("unexpected files identical, diff: %v\n", cmp.Diff(filesIdentical, expectedFilesIdentical, opts...))
 			}
 
 			err = os.RemoveAll(autofixDir)

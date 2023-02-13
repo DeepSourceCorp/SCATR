@@ -33,6 +33,7 @@ type IssuePrinter interface {
 	PrintHeader(header string)
 	PrintIssue(file string, line, column, failureType int, issue *Issue)
 	PrintUnifiedDiff(file string, diff gotextdiff.Unified)
+	PrintIdenticalGoldenFile(file string)
 	PrintStatus(passed bool)
 	PrintWarning(warning string)
 }
@@ -61,8 +62,13 @@ func printAutofixDiff(res autofixDiff, printer IssuePrinter) {
 	}
 }
 
+func printIdenticalFiles(res identicalGoldenFiles, printer IssuePrinter) {
+	for file := range res {
+		printer.PrintIdenticalGoldenFile(file)
+	}
+}
+
 func printUnmatchedFiles(result *Result, files map[string]*pragma.File, printer IssuePrinter) {
-	fmt.Println()
 	warnedFiles := make(map[string]struct{})
 
 	for _, iss := range result.Issues {
@@ -111,6 +117,10 @@ func (DefaultIssuePrinter) PrintHeader(header string) {
 func (DefaultIssuePrinter) PrintUnifiedDiff(file string, diff gotextdiff.Unified) {
 	fmt.Println(file)
 	fmt.Println(diff)
+}
+
+func (DefaultIssuePrinter) PrintIdenticalGoldenFile(file string) {
+	fmt.Printf("%s: file is identical to the golden file\n", file)
 }
 
 func (DefaultIssuePrinter) PrintWarning(warning string) {
@@ -238,6 +248,10 @@ func (p *PrettyIssuePrinter) PrintUnifiedDiff(file string, diff gotextdiff.Unifi
 	}
 }
 
+func (p *PrettyIssuePrinter) PrintIdenticalGoldenFile(file string) {
+	p.fileColor.Printf("# %s: Input file identical to the golden file\n", file)
+}
+
 func (p *PrettyIssuePrinter) PrintWarning(warning string) {
 	p.warnLabelColor.Print("WARN")
 	fmt.Print(" ")
@@ -251,6 +265,8 @@ func (NOPIssuePrinter) PrintHeader(string) {}
 func (NOPIssuePrinter) PrintIssue(string, int, int, int, *Issue) {}
 
 func (NOPIssuePrinter) PrintUnifiedDiff(string, gotextdiff.Unified) {}
+
+func (NOPIssuePrinter) PrintIdenticalGoldenFile(string) {}
 
 func (NOPIssuePrinter) PrintStatus(bool) {}
 

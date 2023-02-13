@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"bytes"
 	"os"
 	"path/filepath"
 	"strings"
@@ -206,6 +207,56 @@ func diffAutofixResult(
 		}
 
 		result[codeFilePath] = diff
+	}
+
+	return result, len(result) == 0, nil
+}
+
+type identicalGoldenFiles = map[string]struct{}
+
+func checkIdenticalGoldenFile(
+	codePath string,
+	excludedDirs []string,
+	backup *AutofixBackup,
+) (identicalGoldenFiles, bool, error) {
+	result := make(identicalGoldenFiles)
+
+	for _, filePath := range backup.CopiedFiles {
+		codeFilePath := filepath.Join(codePath, filePath)
+
+		codeFilePathNormalized, err := normalizeFilePath(codeFilePath)
+		if err != nil {
+			return nil, false, err
+		}
+
+		if isExcluded(codeFilePathNormalized, excludedDirs) {
+			continue
+		}
+
+		goldenFilePath := codeFilePath + ".golden"
+		exists, err := fileExists(goldenFilePath)
+		if err != nil {
+			return nil, false, err
+		}
+
+		if !exists {
+			// Continue if the golden file does not exist.
+			continue
+		}
+
+		originalFile, err := os.ReadFile(codeFilePath)
+		if err != nil {
+			return nil, false, err
+		}
+
+		goldenFile, err := os.ReadFile(goldenFilePath)
+		if err != nil {
+			return nil, false, err
+		}
+
+		if bytes.Equal(originalFile, goldenFile) {
+			result[codeFilePath] = struct{}{}
+		}
 	}
 
 	return result, len(result) == 0, nil
