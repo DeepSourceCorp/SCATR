@@ -17,7 +17,7 @@ In case you would like to install from source,
 ```sh
 # make sure to install go from `go.dev`
 # clone the repo 
-git clone git@github.com:deepsourcelabs/SCATR.git
+git clone https://github.com/deepsourcelabs/SCATR
 
 # cd into the directory
 cd SCATR
