@@ -1,0 +1,16 @@
+package main
+
+func bar() {
+	a := 10
+	a = a
+}
+
+func baz() {
+	a := 10
+	a = a
+}
+
+func lorem() {
+	a := 10
+	a = a
+}

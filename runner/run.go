@@ -2,6 +2,7 @@ package runner
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -100,6 +101,37 @@ func testAutofix(
 		return nil, nil, false, err
 	}
 
+	diff, identical, passed, err := runAutofixTests(config, autofixDir, backup)
+	if err != nil {
+		log.Println("Autofix run error:", err)
+		restoreErr := restoreBackup(backup)
+		if restoreErr != nil {
+			return nil, nil, false,
+				fmt.Errorf("autofix err: %s, restore err: %s", err.Error(), restoreErr.Error())
+		}
+
+		return nil, nil, false, err
+	}
+
+	return diff, identical, passed, restoreBackup(backup)
+}
+
+func restoreBackup(backup *AutofixBackup) error {
+	log.Println("Restoring the Autofix backup")
+	err := backup.RestoreAndDestroy()
+	if err != nil {
+		log.Println("Unable to restore Autofix backup, err:", err)
+		return err
+	}
+
+	return nil
+}
+
+func runAutofixTests(
+	config *Config,
+	autofixDir string,
+	backup *AutofixBackup,
+) (autofixDiff, identicalGoldenFiles, bool, error) {
 	log.Println("Checking for identical original and golden files")
 	identical, passed, err := checkIdenticalGoldenFile(config.CodePath, config.ExcludedDirs, backup)
 	if err != nil {
