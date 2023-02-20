@@ -49,6 +49,7 @@ func (f *File) extractPragmas() {
 	reader := bufio.NewReader(strings.NewReader(f.Content))
 
 	currentLine := 0
+	previousLine := ""
 	var previousPragmaWithCode *Pragma
 	for {
 		currentLine++
@@ -61,6 +62,7 @@ func (f *File) extractPragmas() {
 			break
 		}
 
+		previousLine = line
 		line = strings.TrimSpace(line)
 
 		var pragma *Pragma
@@ -108,8 +110,23 @@ func (f *File) extractPragmas() {
 				continue
 			}
 
+			// Previous line also has code
+			if !hasPrefixes(previousLine, f.CommentPrefix) {
+				continue
+			}
+
 			pragma.merge(previousPragma)
 			delete(f.Pragmas, lineNum-1)
 		}
 	}
+}
+
+func hasPrefixes(line string, prefixes []string) bool {
+	for _, prefix := range prefixes {
+		if strings.HasPrefix(line, prefix) {
+			return true
+		}
+	}
+
+	return false
 }
