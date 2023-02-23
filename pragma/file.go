@@ -48,11 +48,11 @@ func readLine(reader *bufio.Reader) (string, error) {
 func (f *File) extractPragmas() {
 	reader := bufio.NewReader(strings.NewReader(f.Content))
 
-	currentLine := 0
+	currentLineNum := 0
 	previousLine := ""
 	var previousPragmaWithCode *Pragma
 	for {
-		currentLine++
+		currentLineNum++
 
 		line, err := readLine(reader)
 		if err != nil {
@@ -66,7 +66,7 @@ func (f *File) extractPragmas() {
 		line = strings.TrimSpace(line)
 
 		var pragma *Pragma
-		lineNum := currentLine
+		lineNum := currentLineNum
 		for _, prefix := range f.CommentPrefix {
 			split := strings.Split(line, prefix)
 			if len(split) < 2 {

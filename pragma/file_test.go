@@ -352,6 +352,22 @@ issueCaseRaised(010); // [CXX-S112]`,
 				},
 			},
 		},
+		{
+			name: "issue collapse - blank line",
+			args: args{
+				content: `code();
+
+// [CXX-S112]
+issueCaseRaised(010);`,
+				commentPrefix: []string{"//"},
+			},
+			want: map[int]*Pragma{
+				4: {
+					Issues: map[string][]*Issue{"CXX-S112": {}},
+					Hit:    map[string]bool{"CXX-S112": false},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
