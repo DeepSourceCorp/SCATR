@@ -334,6 +334,40 @@ fmt.Println("Hello") // [GO-W1003]: 30
 				},
 			},
 		},
+		{
+			name: "issue collapse bug - cxx",
+			args: args{
+				content: `issueCaseNotRaised(00); // [CXX-S111]
+issueCaseRaised(010); // [CXX-S112]`,
+				commentPrefix: []string{"//"},
+			},
+			want: map[int]*Pragma{
+				1: {
+					Issues: map[string][]*Issue{"CXX-S111": {}},
+					Hit:    map[string]bool{"CXX-S111": false},
+				},
+				2: {
+					Issues: map[string][]*Issue{"CXX-S112": {}},
+					Hit:    map[string]bool{"CXX-S112": false},
+				},
+			},
+		},
+		{
+			name: "issue collapse - blank line",
+			args: args{
+				content: `code();
+
+// [CXX-S112]
+issueCaseRaised(010);`,
+				commentPrefix: []string{"//"},
+			},
+			want: map[int]*Pragma{
+				4: {
+					Issues: map[string][]*Issue{"CXX-S112": {}},
+					Hit:    map[string]bool{"CXX-S112": false},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
