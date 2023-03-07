@@ -29,6 +29,7 @@ func TestTestChecks(t *testing.T) {
 		"go", "go_failing", "go_failing_misc",
 		"go_multiple_pragmas", "go_failing_multiple_files", "go_included_files",
 		"go_code_path", "go_code_path_included_files", "go_excluded_dirs",
+		"go_issue_codes",
 		"py", "py_failing",
 	}
 

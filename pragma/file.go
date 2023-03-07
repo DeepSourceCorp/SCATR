@@ -5,22 +5,50 @@ import (
 	"bytes"
 	"io"
 	"log"
+	"path/filepath"
+	"regexp"
 	"strings"
 )
+
+type CheckMode int
+
+const (
+	CheckAll CheckMode = iota
+	CheckInclude
+	CheckExclude
+)
+
+func (c CheckMode) String() string {
+	switch c {
+	case CheckAll:
+		return "CheckAll"
+	case CheckInclude:
+		return "CheckInclude"
+	case CheckExclude:
+		return "CheckExclude"
+	default:
+		return "CheckUnknown"
+	}
+}
 
 type File struct {
 	Content       string
 	CommentPrefix []string
 	Pragmas       map[int]*Pragma
+
+	CheckMode  CheckMode
+	IssueCodes []string // issue codes to include / exclude based on the CheckMode.
 }
 
-func NewFile(content string, commentPrefix []string) *File {
+func NewFile(name, content string, commentPrefix []string) *File {
 	file := &File{
 		Content:       content,
 		CommentPrefix: commentPrefix,
 		Pragmas:       make(map[int]*Pragma),
+		CheckMode:     CheckAll,
+		IssueCodes:    nil,
 	}
-	file.extractPragmas()
+	file.extractPragmas(name)
 	return file
 }
 
@@ -45,7 +73,53 @@ func readLine(reader *bufio.Reader) (string, error) {
 	return lineBuf.String(), nil
 }
 
-func (f *File) extractPragmas() {
+var issueCodeRegex = regexp.MustCompile(`\w+-\w?\d{1,4}`)
+
+func (f *File) checkFileName(name string) {
+	// Remove the file extension
+	name = strings.TrimSuffix(name, filepath.Ext(name))
+	if issueCodeRegex.MatchString(name) {
+		f.CheckMode = CheckInclude
+		f.IssueCodes = append(f.IssueCodes, name)
+	}
+}
+
+func (f *File) readCheckMode(comment string) {
+	if f.CheckMode != CheckAll {
+		return
+	}
+
+	comment = strings.TrimSpace(comment)
+
+	isInclude := strings.HasPrefix(comment, "scatr-check:")
+	isIgnore := strings.HasPrefix(comment, "scatr-ignore:")
+
+	switch {
+	case isInclude:
+		comment = strings.TrimPrefix(comment, "scatr-check:")
+		f.CheckMode = CheckInclude
+
+	case isIgnore:
+		comment = strings.TrimPrefix(comment, "scatr-ignore:")
+		f.CheckMode = CheckExclude
+
+	default:
+		return
+	}
+
+	for _, issueCode := range strings.Split(comment, ",") {
+		code := strings.TrimSpace(issueCode)
+		if !issueCodeRegex.MatchString(code) {
+			continue
+		}
+
+		f.IssueCodes = append(f.IssueCodes, code)
+	}
+}
+
+func (f *File) extractPragmas(name string) {
+	f.checkFileName(name)
+
 	reader := bufio.NewReader(strings.NewReader(f.Content))
 
 	currentLineNum := 0
@@ -71,6 +145,10 @@ func (f *File) extractPragmas() {
 			split := strings.Split(line, prefix)
 			if len(split) < 2 {
 				continue
+			}
+
+			if lineNum == 1 {
+				f.readCheckMode(split[1])
 			}
 
 			pragma = ParsePragma(split[1])

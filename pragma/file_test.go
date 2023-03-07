@@ -371,9 +371,124 @@ issueCaseRaised(010);`,
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewFile(tt.args.content, tt.args.commentPrefix); !reflect.DeepEqual(got.Pragmas, tt.want) {
+			if got := NewFile("", tt.args.content, tt.args.commentPrefix); !reflect.DeepEqual(got.Pragmas, tt.want) {
 				t.Errorf("NewFile() = %v, want %v, diff %v", got.Pragmas, tt.want,
 					cmp.Diff(tt.want, got.Pragmas))
+			}
+		})
+	}
+}
+
+func TestNewFile__CheckMode(t *testing.T) {
+	type args struct {
+		name          string
+		content       string
+		commentPrefix []string
+	}
+	type want struct {
+		checkMode  CheckMode
+		issueCodes []string
+	}
+	tests := []struct {
+		name string
+		args args
+		want want
+	}{
+		{
+			name: "check all issues - go",
+			args: args{
+				name: "file.go",
+				content: `package main
+
+func main() {}`,
+				commentPrefix: []string{"//"},
+			},
+			want: want{
+				checkMode:  CheckAll,
+				issueCodes: nil,
+			},
+		},
+		{
+			name: "check all issues - python",
+			args: args{
+				name:          "file.py",
+				content:       `print("Hello World")`,
+				commentPrefix: []string{"#"},
+			},
+			want: want{
+				checkMode: CheckAll,
+			},
+		},
+		{
+			name: "include issues - file name",
+			args: args{
+				name:          "PY-W1000.py",
+				content:       `print("Hello World")`,
+				commentPrefix: []string{"#"},
+			},
+			want: want{
+				checkMode:  CheckInclude,
+				issueCodes: []string{"PY-W1000"},
+			},
+		},
+		{
+			name: "include issues - pragma",
+			args: args{
+				name:          "file.py",
+				content:       `# scatr-check: PY-W1000, PY-S1024,PY-1234`,
+				commentPrefix: []string{"#"},
+			},
+			want: want{
+				checkMode:  CheckInclude,
+				issueCodes: []string{"PY-W1000", "PY-S1024", "PY-1234"},
+			},
+		},
+		{
+			name: "include issues - file name override",
+			args: args{
+				name:          "PY-W0000.py",
+				content:       `# scatr-check: PY-W1000, PY-S1024,PY-1234`,
+				commentPrefix: []string{"#"},
+			},
+			want: want{
+				checkMode:  CheckInclude,
+				issueCodes: []string{"PY-W0000"},
+			},
+		},
+		{
+			name: "exclude issues",
+			args: args{
+				name:          "file.py",
+				content:       `# scatr-ignore: PY-W1000, PY-S1024,PY-1234`,
+				commentPrefix: []string{"#"},
+			},
+			want: want{
+				checkMode:  CheckExclude,
+				issueCodes: []string{"PY-W1000", "PY-S1024", "PY-1234"},
+			},
+		},
+		{
+			name: "invalid pragma",
+			args: args{
+				name: "file.py",
+				content: `# pragma needs to be on the first line
+# scatr-ignore: PY-W1000, PY-S1024,PY-1234`,
+				commentPrefix: []string{"#"},
+			},
+			want: want{
+				checkMode: CheckAll,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := NewFile(tt.args.name, tt.args.content, tt.args.commentPrefix)
+
+			if !reflect.DeepEqual(got.CheckMode, tt.want.checkMode) {
+				t.Errorf("NewFile().CheckMode = %v, want %v", got.CheckMode, tt.want.checkMode)
+			}
+			if !reflect.DeepEqual(got.IssueCodes, tt.want.issueCodes) {
+				t.Errorf("NewFile().IssueCodes = %v, want %v", got.IssueCodes, tt.want.issueCodes)
 			}
 		})
 	}

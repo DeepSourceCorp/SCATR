@@ -52,24 +52,31 @@ func diffChecksResult(
 				continue
 			}
 
-			issues.Unexpected = append(issues.Unexpected, iss)
-			passed = false
+			if shouldReport(f, iss.Code) {
+				issues.Unexpected = append(issues.Unexpected, iss)
+				passed = false
+			}
 			continue
 		}
 
 		p, ok := f.Pragmas[iss.Position.Start.Line]
 		if !ok {
-			issues.Unexpected = append(issues.Unexpected, iss)
-			passed = false
+			if shouldReport(f, iss.Code) {
+				issues.Unexpected = append(issues.Unexpected, iss)
+				passed = false
+			}
 			continue
 		}
 
 		pragmaIssues, ok := p.Issues[iss.Code]
 		if !ok {
 			// issue code mismatch
+			// if shouldReport(f, iss.Code) {
+			// 	fmt.Println("Unexpected c:", iss.Code)
 			issues.Unexpected = append(issues.Unexpected, iss)
-			p.Hit[iss.Code] = true
 			passed = false
+			// }
+			p.Hit[iss.Code] = true
 			continue
 		}
 
@@ -90,8 +97,10 @@ func diffChecksResult(
 		}
 
 		if issueFromPragma == nil {
-			issues.Unexpected = append(issues.Unexpected, iss)
-			passed = false
+			if shouldReport(f, iss.Code) {
+				issues.Unexpected = append(issues.Unexpected, iss)
+				passed = false
+			}
 			p.Hit[iss.Code] = true
 			continue
 		}
@@ -116,23 +125,25 @@ func diffChecksResult(
 				for _, issue := range pragmaIssues {
 					if !issue.Hit {
 						p.Hit[code] = true
-						issues.NotRaised = append(issues.NotRaised, &Issue{
-							Code:  code,
-							Title: issue.Message,
-							Position: IssuePosition{
-								Start: Location{
-									Line:   line,
-									Column: issue.Column,
+						if shouldReport(file, code) {
+							issues.NotRaised = append(issues.NotRaised, &Issue{
+								Code:  code,
+								Title: issue.Message,
+								Position: IssuePosition{
+									Start: Location{
+										Line:   line,
+										Column: issue.Column,
+									},
 								},
-							},
-						})
-						passed = false
+							})
+							passed = false
+						}
 					}
 				}
 			}
 
 			for code, hit := range p.Hit {
-				if !hit {
+				if !hit && shouldReport(file, code) {
 					issues.NotRaised = append(issues.NotRaised, &Issue{
 						Code:  code,
 						Title: "",
@@ -147,6 +158,36 @@ func diffChecksResult(
 	}
 
 	return result, passed
+}
+
+func shouldReport(file *pragma.File, issueCode string) bool {
+	if file == nil ||
+		file.CheckMode == pragma.CheckAll ||
+		file.IssueCodes == nil {
+		return true
+	}
+
+	switch file.CheckMode {
+	case pragma.CheckInclude:
+		for _, code := range file.IssueCodes {
+			if code == issueCode {
+				return true
+			}
+		}
+
+		return false
+
+	case pragma.CheckExclude:
+		for _, code := range file.IssueCodes {
+			if code == issueCode {
+				return false
+			}
+		}
+
+		return true
+	}
+
+	return true
 }
 
 type autofixDiff map[string]gotextdiff.Unified
