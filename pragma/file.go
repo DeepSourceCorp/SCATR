@@ -73,8 +73,12 @@ func readLine(reader *bufio.Reader) (string, error) {
 	return lineBuf.String(), nil
 }
 
-var issueCodeRegex = regexp.MustCompile(`\w+-\w?\d{1,4}`)
+// issueCodeRegex matches issue codes of the format XXX-XX1234.
+// See: https://regex101.com/r/4PIOIi/1
+var issueCodeRegex = regexp.MustCompile(`\w+-\w{0,2}\d{1,4}`)
 
+// checkFileName checks if the file name (without the extension) matches an
+// issue code.
 func (f *File) checkFileName(name string) {
 	// Remove the file extension
 	name = strings.TrimSuffix(name, filepath.Ext(name))
@@ -84,6 +88,9 @@ func (f *File) checkFileName(name string) {
 	}
 }
 
+// readCheckMode takes a comment as an input and checks if it is a check/ignore
+// pragma. It should only be called for the first line in the file. In case
+// the file name is already an issue code, this ignores the pragma.
 func (f *File) readCheckMode(comment string) {
 	if f.CheckMode != CheckAll {
 		return
