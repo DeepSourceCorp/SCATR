@@ -37,8 +37,8 @@ func matchFileNameIssueCodes(files map[string]*pragma.File, analysisResult *Resu
 	}
 
 	for _, file := range files {
-		_, ok := analysisIssueCodes[file.Name]
-		if !ok {
+		_, exists := analysisIssueCodes[file.Name]
+		if !exists {
 			continue
 		}
 
