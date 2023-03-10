@@ -26,6 +26,30 @@ func newIssuesForFile() *issuesForFile {
 	}
 }
 
+// matchFileNameIssueCodes matches if the file name matches an issue code from
+// the analysis result. In case it does, and the check mode is pragma.CheckAll,
+// it changes the check mode to pragma.CheckInclude and adds the matched issue
+// code to the file's issue list.
+func matchFileNameIssueCodes(files map[string]*pragma.File, analysisResult *Result) {
+	fileIssueCodes := make(map[string][]*pragma.File, len(files))
+	for _, file := range files {
+		fileIssueCodes[file.Name] = append(fileIssueCodes[file.Name], file)
+	}
+
+	for _, iss := range analysisResult.Issues {
+		files, ok := fileIssueCodes[iss.Code]
+		if !ok {
+			continue
+		}
+
+		issueCodes := []string{iss.Code}
+		for _, file := range files {
+			file.CheckMode = pragma.CheckInclude
+			file.IssueCodes = issueCodes
+		}
+	}
+}
+
 func diffChecksResult(
 	files map[string]*pragma.File,
 	excludedDirs []string,
@@ -34,6 +58,8 @@ func diffChecksResult(
 ) (checksDiff, bool) {
 	result := make(checksDiff)
 	passed := true
+
+	matchFileNameIssueCodes(files, analysisResult)
 
 	for _, iss := range analysisResult.Issues {
 		if isExcluded(iss.Position.fileNormalized, excludedDirs) {

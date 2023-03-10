@@ -420,39 +420,15 @@ func main() {}`,
 			},
 		},
 		{
-			name: "include issues - file name",
-			args: args{
-				name:          "PY-W1000.py",
-				content:       `print("Hello World")`,
-				commentPrefix: []string{"#"},
-			},
-			want: want{
-				checkMode:  CheckInclude,
-				issueCodes: []string{"PY-W1000"},
-			},
-		},
-		{
 			name: "include issues - pragma",
 			args: args{
 				name:          "file.py",
-				content:       `# scatr-check: PY-W1000, PY-S1024,PY-1234`,
+				content:       `# scatr-check: PY-W1000, PY-S1024,PY-1234, issue-code`,
 				commentPrefix: []string{"#"},
 			},
 			want: want{
 				checkMode:  CheckInclude,
-				issueCodes: []string{"PY-W1000", "PY-S1024", "PY-1234"},
-			},
-		},
-		{
-			name: "include issues - file name override",
-			args: args{
-				name:          "PY-W0000.py",
-				content:       `# scatr-check: PY-W1000, PY-S1024,PY-1234`,
-				commentPrefix: []string{"#"},
-			},
-			want: want{
-				checkMode:  CheckInclude,
-				issueCodes: []string{"PY-W0000"},
+				issueCodes: []string{"PY-W1000", "PY-S1024", "PY-1234", "issue-code"},
 			},
 		},
 		{

@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 	"path/filepath"
-	"regexp"
 	"strings"
 )
 
@@ -32,6 +31,7 @@ func (c CheckMode) String() string {
 }
 
 type File struct {
+	Name          string
 	Content       string
 	CommentPrefix []string
 	Pragmas       map[int]*Pragma
@@ -41,14 +41,16 @@ type File struct {
 }
 
 func NewFile(name, content string, commentPrefix []string) *File {
+
 	file := &File{
+		Name:          strings.TrimSuffix(name, filepath.Ext(name)),
 		Content:       content,
 		CommentPrefix: commentPrefix,
 		Pragmas:       make(map[int]*Pragma),
 		CheckMode:     CheckAll,
 		IssueCodes:    nil,
 	}
-	file.extractPragmas(name)
+	file.extractPragmas()
 	return file
 }
 
@@ -73,29 +75,9 @@ func readLine(reader *bufio.Reader) (string, error) {
 	return lineBuf.String(), nil
 }
 
-// issueCodeRegex matches issue codes of the format XXX-XX1234.
-// See: https://regex101.com/r/4PIOIi/1
-var issueCodeRegex = regexp.MustCompile(`\w+-\w{0,2}\d{1,4}`)
-
-// checkFileName checks if the file name (without the extension) matches an
-// issue code.
-func (f *File) checkFileName(name string) {
-	// Remove the file extension
-	name = strings.TrimSuffix(name, filepath.Ext(name))
-	if issueCodeRegex.MatchString(name) {
-		f.CheckMode = CheckInclude
-		f.IssueCodes = append(f.IssueCodes, name)
-	}
-}
-
 // readCheckMode takes a comment as an input and checks if it is a check/ignore
-// pragma. It should only be called for the first line in the file. In case
-// the file name is already an issue code, this ignores the pragma.
+// pragma. It should only be called for the first line in the file.
 func (f *File) readCheckMode(comment string) {
-	if f.CheckMode != CheckAll {
-		return
-	}
-
 	comment = strings.TrimSpace(comment)
 
 	isInclude := strings.HasPrefix(comment, "scatr-check:")
@@ -116,17 +98,11 @@ func (f *File) readCheckMode(comment string) {
 
 	for _, issueCode := range strings.Split(comment, ",") {
 		code := strings.TrimSpace(issueCode)
-		if !issueCodeRegex.MatchString(code) {
-			continue
-		}
-
 		f.IssueCodes = append(f.IssueCodes, code)
 	}
 }
 
-func (f *File) extractPragmas(name string) {
-	f.checkFileName(name)
-
+func (f *File) extractPragmas() {
 	reader := bufio.NewReader(strings.NewReader(f.Content))
 
 	currentLineNum := 0
