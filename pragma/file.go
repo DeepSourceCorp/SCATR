@@ -41,7 +41,6 @@ type File struct {
 }
 
 func NewFile(name, content string, commentPrefix []string) *File {
-
 	file := &File{
 		Name:          strings.TrimSuffix(name, filepath.Ext(name)),
 		Content:       content,
