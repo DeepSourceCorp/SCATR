@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "result": {
+    "main.go": {
+      "unexpected": [],
+      "not-raised": []
+    }
+  }
+}

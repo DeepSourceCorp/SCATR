@@ -109,5 +109,7 @@ func getPragmasForFile(path string, commentPrefix []string) (*pragma.File, error
 	if err != nil {
 		return nil, err
 	}
-	return pragma.NewFile(string(b), commentPrefix), nil
+
+	_, name := filepath.Split(path)
+	return pragma.NewFile(name, string(b), commentPrefix), nil
 }
