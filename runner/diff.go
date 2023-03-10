@@ -31,22 +31,19 @@ func newIssuesForFile() *issuesForFile {
 // it changes the check mode to pragma.CheckInclude and adds the matched issue
 // code to the file's issue list.
 func matchFileNameIssueCodes(files map[string]*pragma.File, analysisResult *Result) {
-	fileIssueCodes := make(map[string][]*pragma.File, len(files))
-	for _, file := range files {
-		fileIssueCodes[file.Name] = append(fileIssueCodes[file.Name], file)
+	analysisIssueCodes := make(map[string]struct{})
+	for _, iss := range analysisResult.Issues {
+		analysisIssueCodes[iss.Code] = struct{}{}
 	}
 
-	for _, iss := range analysisResult.Issues {
-		files, ok := fileIssueCodes[iss.Code]
+	for _, file := range files {
+		_, ok := analysisIssueCodes[file.Name]
 		if !ok {
 			continue
 		}
 
-		issueCodes := []string{iss.Code}
-		for _, file := range files {
-			file.CheckMode = pragma.CheckInclude
-			file.IssueCodes = issueCodes
-		}
+		file.IssueCodes = []string{file.Name}
+		file.CheckMode = pragma.CheckInclude
 	}
 }
 
