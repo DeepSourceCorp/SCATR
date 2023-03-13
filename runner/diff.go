@@ -100,11 +100,10 @@ func diffChecksResult(
 		pragmaIssues, ok := p.Issues[iss.Code]
 		if !ok {
 			// issue code mismatch
-			// if shouldReport(f, iss.Code) {
-			// 	fmt.Println("Unexpected c:", iss.Code)
-			issues.Unexpected = append(issues.Unexpected, iss)
-			passed = false
-			// }
+			if shouldReport(f, iss.Code) {
+				issues.Unexpected = append(issues.Unexpected, iss)
+				passed = false
+			}
 			p.Hit[iss.Code] = true
 			continue
 		}
