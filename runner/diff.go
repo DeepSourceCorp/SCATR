@@ -37,6 +37,12 @@ func matchFileNameIssueCodes(files map[string]*pragma.File, analysisResult *Resu
 	}
 
 	for _, file := range files {
+		// If the file already has an ignore/check pragma, that takes priority.
+		// Don't check its file name in that case.
+		if file.CheckMode != pragma.CheckAll {
+			continue
+		}
+
 		_, exists := analysisIssueCodes[file.Name]
 		if !exists {
 			continue
