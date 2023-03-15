@@ -118,8 +118,8 @@ func (f *File) extractPragmas() {
 			break
 		}
 
-		previousLine = line
 		line = strings.TrimSpace(line)
+		previousLine = line
 
 		var pragma *Pragma
 		lineNum := currentLineNum
