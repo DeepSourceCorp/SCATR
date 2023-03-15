@@ -186,6 +186,32 @@ print("Hello World")
 			},
 		},
 		{
+			name: "multi line pragma",
+			args: args{
+				content: `
+class C2 : public B {
+public:
+  // [CXX-W2008]: 34 "Grand-parent method"
+  // [CXX-W2008]: 49 "Grand-parent method"
+  int virt_1() override { return A1::virt_1() + A2::virt_1() + A3::virt_1(); }
+  // CHECK-FIXES:  int virt_1() override { return B::virt_1() + B::virt_1() + B::virt_1(); }
+};
+`,
+				commentPrefix: []string{"//"},
+			},
+			want: map[int]*Pragma{
+				6: {
+					Issues: map[string][]*Issue{
+						"CXX-W2008": {
+							{Column: 49, Message: "Grand-parent method"},
+							{Column: 34, Message: "Grand-parent method"},
+						},
+					},
+					Hit: map[string]bool{"CXX-W2008": false},
+				},
+			},
+		},
+		{
 			name: "pragmas split on multiple lines",
 			args: args{
 				content: `
