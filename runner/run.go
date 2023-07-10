@@ -187,12 +187,12 @@ func runScript(cfg TestRunnerConfig, codePath string, env map[string]string) err
 		env = make(map[string]string)
 	}
 
-	cwd, err := os.Getwd()
+	codePathAbs, err := filepath.Abs(codePath)
 	if err != nil {
 		return err
 	}
 
-	env["CODE_PATH"] = filepath.Join(cwd, codePath)
+	env["CODE_PATH"] = codePathAbs
 	err = setEnv(env)
 	if err != nil {
 		return err
