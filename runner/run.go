@@ -150,7 +150,7 @@ func runAutofixTests(
 			return nil, nil, false, err
 		}
 	} else {
-		outputDir, err = filepath.Abs(autofixDir)
+		outputDir, err = normalizeFilePath(autofixDir)
 		if err != nil {
 			return nil, nil, false, err
 		}
@@ -187,12 +187,12 @@ func runScript(cfg TestRunnerConfig, codePath string, env map[string]string) err
 		env = make(map[string]string)
 	}
 
-	cwd, err := os.Getwd()
+	codePathAbs, err := normalizeFilePath(codePath)
 	if err != nil {
 		return err
 	}
 
-	env["CODE_PATH"] = filepath.Join(cwd, codePath)
+	env["CODE_PATH"] = codePathAbs
 	err = setEnv(env)
 	if err != nil {
 		return err
