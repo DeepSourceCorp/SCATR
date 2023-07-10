@@ -101,7 +101,12 @@ func readFiles(config *Config, includedFiles map[string]bool) (map[string]*pragm
 // normalizeFilePath returns an OS-dependent absolute path used for mapping files
 // to pragmas. It joins the filePath with the codePath.
 func normalizeFilePath(filePath string) (string, error) {
-	return filepath.Abs(filePath)
+	abs, err := filepath.Abs(filePath)
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.EvalSymlinks(abs)
 }
 
 func getPragmasForFile(path string, commentPrefix []string) (*pragma.File, error) {
