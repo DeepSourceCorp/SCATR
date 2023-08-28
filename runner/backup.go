@@ -89,7 +89,7 @@ func NewAutofixBackup(
 	}
 
 	for _, match := range matches {
-		normalized, err := normalizeFilePath(filepath.Join(config.CodePath, match))
+		normalized, err := normalizeFilePath(match)
 		if err != nil {
 			log.Println("Error normalizing the file path for", match, "err:", err)
 			continue
